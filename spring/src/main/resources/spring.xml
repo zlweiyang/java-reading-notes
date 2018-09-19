@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+       <!--配置student对象-->
+       <!--无参构造
+       实例对象中必须包含无参构造函数
+       实体类中必须包含每个属性的setter方法
+       -->
+       <!--<bean id="stu" class="com.zl.springdemo.Student">-->
+           <!--<property name="id" value="1"></property>-->
+           <!--<property name="name" value="张三"></property>-->
+           <!--<property name="age" value="23"></property>-->
+       <!--</bean>-->
+
+    <!--<bean id="stu2" class="com.zl.springdemo.Student">-->
+        <!--<property name="id" value="1"></property>-->
+        <!--<property name="name" value="李四"></property>-->
+        <!--<property name="age" value="23"></property>-->
+    <!--</bean>-->
+
+    <!--通过有参构造函数创建对象constructor-arg
+    此时IOC容器会根据constructor-arg标签去加载对应的有参构造函数，创建对象并完成属性赋值。
+    name对应于相应的属性
+    获取对象的方式依然是id和运行时类
+    -->
+    <!--<bean id="stu3" class="com.zl.springdemo.Student">-->
+
+        <!--<constructor-arg name="id" value="3"></constructor-arg>-->
+        <!--<constructor-arg name="name" value="王五"></constructor-arg>-->
+        <!--<constructor-arg name="age" value="22"></constructor-arg>-->
+    <!--</bean>-->
+
+    <!--通过下标index对应属性-->
+    <!--<bean id="stu3" class="com.zl.springdemo.Student">-->
+
+    <!--<constructor-arg index="0" value="3"></constructor-arg>-->
+    <!--<constructor-arg index="1" value="王五"></constructor-arg>-->
+    <!--<constructor-arg index="2" value="22"></constructor-arg>-->
+    <!--</bean>-->
+
+    <!--如果IOC容器管理多个对象，并且对象之间有级联关系，如何实现？-->
+
+    <!--&lt;!&ndash;创建class对象&ndash;&gt;-->
+    <!--<bean id="classes" class="com.zl.springdemo.Classes">-->
+        <!--<property name="id" value="1"></property>-->
+        <!--<property name="name" value="冯班"></property>-->
+
+    <!--</bean>-->
+
+    <!--&lt;!&ndash;创建stu对象&ndash;&gt;-->
+    <!--<bean id="stu" class="com.zl.springdemo.Student">-->
+
+        <!--<property name="id" value="1"></property>-->
+        <!--<property name="name">-->
+            <!--<value><![CDATA[<张三>]]></value>-->
+        <!--</property>-->
+        <!--<property name="age" value="23"></property>-->
+        <!--&lt;!&ndash;将classes对象赋值给stu对象-->
+        <!--通过ref属性将其他bean赋给当前bean对象的方式叫做依赖注入-->
+        <!--&ndash;&gt;-->
+        <!--<property name="classes" ref="classes"></property>-->
+    <!--</bean>-->
+
+    <!--配置2个student对象，1个classes对象，并将2个student对象注入到classes对象中-->
+    <!--配置classes对象-->
+    <bean id="classes" class="com.zl.springdemo.Classes">
+
+        <property name="id" value="1"></property>
+        <property name="name" value="姚班"></property>
+        <property name="students">
+            <!--注入student对象-->
+            <list>
+                <ref bean="stu"/>
+                <ref bean="stu2"/>
+            </list>
+
+        </property>
+    </bean>
+
+    <bean id="stu" class="com.zl.springdemo.Student">
+
+        <property name="id" value="1"></property>
+        <property name="name">
+
+            <value><![CDATA[<张三>]]></value>
+        </property>
+        <property name="age" value="23"></property>
+    </bean>
+
+    <bean id="stu2" class="com.zl.springdemo.Student">
+
+        <property name="id" value="2"></property>
+        <property name="name">
+
+            <value><![CDATA[<李四>]]></value>
+        </property>
+        <property name="age" value="23"></property>
+    </bean>
+
+</beans>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--scope默认值为singleton-->
+    <!--<bean id="user" class = "com.zl.entity.User" scope="prototype">-->
+    <!--<bean id="user" class = "com.zl.entity.User" >-->
+
+        <!--<property name="id" value="1"></property>-->
+        <!--<property name="name" value="张三"></property>-->
+        <!--&lt;!&ndash;<property name="age" value="23"></property>&ndash;&gt;-->
+    <!--</bean>-->
+
+    <!--<bean id="user2" class="com.zl.entity.User" parent="user">-->
+        <!--<property name="id" value="2"></property>-->
+        <!--<property name="name" value="李四"></property>-->
+        <!--<property name="age" value="22"></property>-->
+    <!--</bean>-->
+    <!--覆盖name属性-->
+
+    <bean id="user" class="com.zl.entity.User" depends-on="car">
+
+        <property name="id" value="1"></property>
+        <property name="name" value="秦琼"></property>
+        <property name="age" value="25"></property>
+    </bean>
+
+    <bean id="car" class="com.zl.entity.Car">
+
+        <property name="id" value="1"></property>
+        <property name="brand" value="奥迪"></property>
+    </bean>
+
+</beans>
