@@ -1,5 +1,7 @@
 **Java并发编程艺术知识点**
 
+来源于《Java并发编程的艺术》华科大佬博客Java并发指南：https://blog.csdn.net/column/details/21961.html
+
 ## 1.Volatile ##
 轻量级synchronized，保证共享变量的可见性，与synchronized相比执行成本低，不会引起上下文切换和调度。
 
