@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Profiler {
 
-    private static final ThreadLocal<Long> TIME_THREADLOCAL = new ThreadLocal<>(){
+    private static final ThreadLocal<Long> TIME_THREADLOCAL = new ThreadLocal<Long>(){
         @Override
         protected Long initialValue(){
             return System.currentTimeMillis();
