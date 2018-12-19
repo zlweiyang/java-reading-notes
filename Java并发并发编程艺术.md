@@ -581,21 +581,61 @@ AQS同步组件
 
 - ReetranLock：锁
 
-可重入性：
+## 1.ReentranLock和AQS的关系 ##
+AQS是Java并发包的基础类，ReentrantLock、ReetranReadWriteLock底层都是基于AQS来实现的。所谓AQS就是AbstractQueuedSynchronizer,即抽象队列同步器。
 
-锁的实现:
+<div align="center"> <img src="reentrantLockandaqs.png" width="450"/> </div><br>
 
-性能区别:
+ReentrantLock内部包含一个AQS对象，也就是AbstractQueuedSynchronizer类型的对象，这个对象就是ReentrantLock可以实现加锁和释放锁的核心组件。
 
-功能区别:
+**那么ReentrantLock加锁和释放锁的底层原理？**
 
-ReentrantLock可指定公平锁和非公平锁。
+当一个线程尝试使用ReentrantLock的lock()方法进行加锁时，AQS对象内部有一个核心变量state，代表加锁的状态。初始条件下，这个state值为0。另外AQS内部还有一个关键变量，用来记录当前加锁的是哪个线程，初始情况下这个变量为null。
+
+<div align="center"> <img src="aqs.jpg" width="450"/> </div><br>
+
+当线程调用ReentrantLock的lock()方法尝试进行加锁，这个加锁的过程就是使用CAS操作将state值从0变为1，如果之前没有被加锁那么state的值肯定为0，所以此时线程1加锁成功，一旦线程1加锁成功就可以设置当前加锁线程是自己。整个加锁过程如下图：
+
+<div align="center"> <img src="AQS02.png" width="450"/> </div><br>
+
+**可重入性**：可以对一个ReentrantLock锁定的对象进行多次lock()和unlcok()操作，即一个锁可以加多次。当线程进行加锁时，会判断一下当前加锁线程是不是自己，是自己就可重入多次加锁，每次加锁就将state的值进行累加。
+
+当另外一个线程2想对当前对象进行ReentrantLock加锁时，线程2首先会判断一下当前加锁线程是不是自己，即查看当前state值是不是0，如果不是，那么CAS失败，加锁失败。
+
+<div align="center"> <img src="AQS03.png" width="450"/> </div><br>
+
+加锁失败后，线程2会将自己放入AQS的等待队列，等待线程释放锁之后，自己可以尝试重新加锁。其过程如下图所示：
+
+<div align="center"> <img src="AQS04.jpg" width="450"/> </div><br>
+
+当线程1执行完自己的业务代码之后，就会释放锁，其释放锁的过程就是将AQS内的state值减1，如果state等于0，那么才彻底释放锁，将加锁线程变量置为null，如下图所示：
+
+<div align="center"> <img src="AQS05.jpg" width="450"/> </div><br>
+
+接下来从等待队列的对头唤醒线程2重新尝试加锁。接下来加锁过程就与上面线程1类似，当加锁成功之后需要将线程2从等待队列中移除。
+
+<div align="center"> <img src="AQS06.jpg" width="450"/> </div><br>
+
+## ReentrantLock可指定公平锁和非公平锁。 ##
+
+**什么是非公平锁？**
+
+在上述ReentrantLock进行加锁场景下，当线程1刚刚释放锁的时候，线程2还没来得及重新加锁，突然来了一个线程3，进行加锁，直接抢占加锁，那么线程2加锁失败，只有继续等待，这就是非公平锁。
+
+当如果线程3想要加锁之前进行判断等待队列中是否有人排队，如果发现有人排队，则自觉在进入队列排队，那么此时线程就可以加锁成功，并移除队列。基本过程如下图
+
+<div align="center"> <img src="AQS07.jpg" width="450"/> </div><br>
 
 公平锁：公平是针对锁的获取而言的，如果一个锁是公平的，那么锁的获取顺序就应该符合请求的绝对时间顺序，也就是FIFO
+
+
+## ReentrantReadWriteLock ##
 
 读写锁：ReadWriteLock定义获取读锁和写锁的两个方法，即readlock()方法和writelock()方法。
 
 读锁是共享锁，写锁是排他锁。
+
+对于共享数据，如果加了写锁，其他线程既不能加读锁也不能加写锁。如果一个线程加了读锁，其他线程可以继续加读锁，但是不能加写锁。
 
 ReentrantLock提供一个Condition类，可以分组唤醒需要唤醒的线程
 
@@ -613,7 +653,6 @@ countDownLatch的计数器只能使用一次，而CyclicBarrier的计数器可�
 Condition接口提供类似Object的监视器方法，与Lock配合实现等待/通知模式。
 
 - FutureTask:提前完成任务，相当于订单
-## ReentrantLock ##
 
 
 # 线程之间的通信 #
@@ -901,6 +940,7 @@ HashMap、TreeMap->ConcurrentHashMap、ConcurrentSkipListMap
 # 六、Java中的并发容器 #
 
 # 七、并发工具类 #
+
 
 # 八、Java中的线程池 #
 
